@@ -1,2 +1,2 @@
-# CherAmi
-R Functions for Research
+# pigeontools
+R Functions for Reserach

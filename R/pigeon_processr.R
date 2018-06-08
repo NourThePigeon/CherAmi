@@ -65,9 +65,15 @@ pigeon_process <- function(x, method = "default", exports = TRUE, endformat = "w
 
   OUT <- dplyr::full_join(OUT_temp[[1]],OUT_temp[[2]], by = c("part", "study","trial"))
 
-  OUT <- tidyr::gather(OUT, info, val, -trial, -part, -study, -order) # -sex, -code, -agemos ~ if with director
-  OUT <- tidyr::unite(OUT, info1, info, trial)
-  OUT <- tidyr::spread(OUT, info1, val)
+  if (endformat == "wide"){
+    if (any(grepl("director", OUT))){
+      OUT <- tidyr::gather(OUT, info, val, -trial, -part, -study, -order, -sex, -code, -agemos)
+    } else {
+      OUT <- tidyr::gather(OUT, info, val, -trial, -part, -study, -order)
+    }
+    OUT <- tidyr::unite(OUT, info1, info, trial)
+    OUT <- tidyr::spread(OUT, info1, val)
+  }
 
   invisible(return(OUT))
 

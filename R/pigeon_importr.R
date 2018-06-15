@@ -88,7 +88,8 @@ pigeon_import <- function(method = "default", pattern.regex = NULL, pattern.exc 
     invisible(return(OUT))
 
   } else if (method == "director"){
-    OUT <- import_base(path, pattern.regex, pattern.exc, pattern.ext = ".txt")
+    pattern.ext = ".txt"
+    OUT <- import_base(path, pattern.regex, pattern.exc, pattern.ext)
 
     files <- list.files(path, pattern = pattern.ext)
     if(is.character(pattern.regex)) {

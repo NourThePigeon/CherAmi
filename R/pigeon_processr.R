@@ -63,16 +63,26 @@ pigeon_process <- function(x, method = "default", exports = TRUE, endformat = "w
 
   }
 
-  OUT <- dplyr::full_join(OUT_temp[[1]],OUT_temp[[2]], by = c("part", "study","trial"))
+  if (join == "full"){
+    OUT <- dplyr::full_join(OUT_temp[[1]],OUT_temp[[2]], by = c("part", "study","trial"))
+  } else if (join == "left"){
+    OUT <- dplyr::left_join(OUT_temp[[1]],OUT_temp[[2]], by = c("part", "study","trial"))
+  } else if (join == "right"){
+    OUT <- dplyr::right_join(OUT_temp[[1]],OUT_temp[[2]], by = c("part", "study","trial"))
+  } else if (join == "semi"){
+    OUT <- dplyr::semi_join(OUT_temp[[1]],OUT_temp[[2]], by = c("part", "study","trial"))
+  } else if (join == "inner"){
+    OUT <- dplyr::inner_join(OUT_temp[[1]],OUT_temp[[2]], by = c("part", "study","trial"))
+  }
 
   if (endformat == "wide"){
-    if (any(grepl("director", OUT))){
-      OUT <- tidyr::gather(OUT, info, val, -trial, -part, -study, -order, -sex, -code, -agemos)
+    if (any(grepl("director", method))){
+      OUT_wide <- tidyr::gather(OUT, info, val, -trial, -part, -study, -sex, -code, -agemos)
     } else {
-      OUT <- tidyr::gather(OUT, info, val, -trial, -part, -study, -order)
+      OUT_wide <- tidyr::gather(OUT, info, val, -trial, -part, -study, -order)
     }
-    OUT <- tidyr::unite(OUT, info1, info, trial)
-    OUT <- tidyr::spread(OUT, info1, val)
+    OUT_wide <- tidyr::unite(OUT, info1, info, trial)
+    OUT_wide <- tidyr::spread(OUT, info1, val)
   }
 
   invisible(return(OUT))

@@ -33,28 +33,34 @@ pigeon_clean <- function(x, method = "default"){
   } else if (method == "director"){
 
     files <- names(x)
-    naming <- unlist(strsplit(files, "10", fixed = 2))
-    numbers <- naming[c(FALSE, TRUE)]
-    study <- naming[c(TRUE, FALSE)]
+    files <- gsub("\\..*", "", files)
+    numbers <- gsub("[^[:digit:]]", "", files)
+    study <- gsub("[[:digit:]]", "", files)
 
     for(i in seq(x)) {
 
+      x[[i]][x[[i]] == ""] <- NA
+      x[[i]] <- data.frame(x[[i]], stringsAsFactors = FALSE)
+
       srow <- grep(":", x[[i]][, 1])
       x_temp <- x[[i]][(srow[2] + 1):nrow(x[[i]]), ]
+      x_temp <- x_temp[ , colSums(is.na(x_temp)) < nrow(x_temp)]
       colnames(x_temp) <- c("trial_info", "order", "side_info")
 
       colnames(x[[i]]) <- x[[i]][srow[1] + 1, ]
       x[[i]] <- x[[i]][(srow[1] + 2):(srow[2] - 1), ]
-      cbind(x[[i]], x_temp)
+      x[[i]] <- x[[i]][rowSums(is.na(x[[i]]))<ncol(x[[i]]), ]
+      x[[i]] <- x[[i]][ , colSums(is.na(x[[i]])) < nrow(x[[i]])]
+      x[[i]] <- cbind(x[[i]], x_temp)
 
       x[[i]] <- x[[i]][complete.cases(x[[i]][, 1]), ]
 
-      x[[i]]$Code <- rep(files[[i]], length(x[[i]]$Code))
-      x[[i]]$study <- rep(files[[i]], length(x[[i]]$Sub))
-      x[[i]]$part <- rep(numbers[[i]], length(x[[i]]$Sub))
-      x[[i]] <- x[[i]][ , -c("Sub")]
+      x[[i]]$Code <- rep(files[i], length(x[[i]]$Code))
+      x[[i]]$study <- rep(study[i], length(x[[i]]$Sub))
+      x[[i]]$part <- rep(numbers[i], length(x[[i]]$Sub))
+      x[[i]] <- x[[i]][ , -grep("Sub",colnames(x[[i]]))]
 
-      x[[i]]$Sub <- as.integer(x[[i]]$Sub)
+      x[[i]]$part <- as.integer(x[[i]]$part)
       x[[i]]$AgeMos <- as.integer(x[[i]]$AgeMos)
       x[[i]]$trial <- as.integer(x[[i]]$trial)
     }

@@ -74,7 +74,7 @@ pigeon_import <- function(method = "default", pattern.regex = NULL, pattern.exc 
 
     invisible(return(OUT))
 
-  } else if (method == "datavyu"){
+  } else if (method == "datavyu" | method == "datavyu2" | method == "reliability"){
 
     OUT <- import_base(path, pattern.regex, pattern.exc)
 

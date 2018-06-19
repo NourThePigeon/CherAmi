@@ -59,6 +59,29 @@ pigeon_process <- function(x, method = "default", exports = TRUE, endformat = "w
 
       OUT_temp[[i]] <- director
 
+    } else it (method[i] == "datavyu2" | method[i] == "reliability"){
+
+      reliability <- x[[i]]
+
+      reliability <- reliability[ , c("part", "trial", "coder2.code01", "look_2.code01", "look_2.duration")]
+
+      reliability <- dplyr::summarise(
+        dplyr::group_by(reliability, part, trial, coder2.code01, look_2.code01),
+        aggregate = sum(look_2.duration))
+
+      reliability$study <- gsub("[[:digit:]]", "", reliability$part)
+      reliability$part <- gsub("[^[:digit:]]", "", reliability$part)
+      reliability <- transform(reliability, part      = as.numeric(part),
+                           trial     = as.numeric(trial),
+                           aggregate = as.numeric(aggregate),
+                           study     = as.character(study))
+
+      reliability <- tidyr::spread(reliability, look_2.code01, aggregate)
+
+      colnames(reliability) <- tolower(colnames(reliability))
+
+      OUT_temp[[i]] <- reliability
+
     }
 
   }

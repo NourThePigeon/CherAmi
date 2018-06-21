@@ -8,12 +8,48 @@
 #' @return A dataframe with aggregated looking, widened data, and trial information
 #' @example
 #' pigeon_process(list(vyu.data, habit.data), c("datavyu", "habit"), join = "left")
-pigeon_process <- function(x, method = "default", exports = TRUE, endformat = "wide", join = "full"){
+pigeon_process <- function(x, method = "default", endformat = "wide", join = "inner", coder = NULL){
 
   OUT_temp <- list(rep("",length(method)))
 
   for (i in seq(x)){
-    if(method[i] == "datavyu"){
+    if(method == "reliability"){
+      if("coder1.code01" %in% colnames(x[[1]])){
+        reliability <- pigeon_process(x, method = c("datavyu","datavyu2"), endformat = "long")
+      } else {
+        reliability <- pigeon_process(x, method = c("datavyu2","datavyu"), endformat = "long")
+      }
+
+      reliability[is.na(reliability)] <- 0
+      reliability$diff <- abs(((reliability$a.x-reliability$a.y)+(reliability$d.x-reliability$d.y))/2)
+
+      nms <- c(reliability$coder1.code01, reliability$coder2.code01)
+      if (is.null(coder)){
+        coder <- names(which(table(nms) == max(table(nms))))
+      } else if (coder == "matrix"){
+      }
+
+      nms <- unique(nms)
+      nms <- nms[!nms %in% coder]
+
+      nms_col <- paste(rep(nms, each = 3), c("co", "mn", "tr"),sep=".")
+
+      OUT <- data.frame(matrix(NA, nrow = length(coder), ncol = length(nms_col)))
+      colnames(OUT) <- nms_col
+      rownames(OUT) <- coder
+
+      for(j in seq(nms)){
+        looktemp <- dplyr::filter(reliability, coder1.code01 == coder & coder2.code01 == nms[j] |
+                                    coder1.code01 == nms[j] & coder2.code01 == coder)
+        OUT[1, (j*3)-2] <- cor(c(looktemp$a.x,looktemp$d.x), c(looktemp$a.y,looktemp$d.y))
+        OUT[1, (j*3)-1] <- mean(looktemp$diff)
+        OUT[1, (j*3)-0] <- nrow(looktemp)
+
+      }
+
+      invisible(return(OUT))
+
+    } else if(method[i] == "datavyu"){
 
       datavyu <- x[[i]]
 
@@ -58,6 +94,29 @@ pigeon_process <- function(x, method = "default", exports = TRUE, endformat = "w
       colnames(director) <- tolower(colnames(director))
 
       OUT_temp[[i]] <- director
+
+    } else if (method[i] == "datavyu2"){
+
+      datavyu2 <- x[[i]]
+
+      datavyu2 <- datavyu2[ , c("part", "trial", "coder2.code01", "look_2.code01", "look_2.duration")]
+
+      datavyu2 <- dplyr::summarise(
+        dplyr::group_by(datavyu2, part, trial, coder2.code01, look_2.code01),
+        aggregate.2 = sum(look_2.duration))
+
+      datavyu2$study <- gsub("[[:digit:]]", "", datavyu2$part)
+      datavyu2$part <- gsub("[^[:digit:]]", "", datavyu2$part)
+      datavyu2 <- transform(datavyu2, part      = as.numeric(part),
+                            trial     = as.numeric(trial),
+                            aggregate.2 = as.numeric(aggregate.2),
+                            study     = as.character(study))
+
+      datavyu2 <- tidyr::spread(datavyu2, look_2.code01, aggregate.2)
+
+      colnames(datavyu2) <- tolower(colnames(datavyu2))
+
+      OUT_temp[[i]] <- datavyu2
 
     }
 

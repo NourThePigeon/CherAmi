@@ -77,6 +77,7 @@ pigeon_clean <- function(x, method = "default"){
       names(x[[i]]) <- trialnames
 
       if (is.na(x[[i]]$coder1.onset[1])){
+        x[[i]] <- NA
         next()
       }
 
@@ -115,11 +116,59 @@ pigeon_clean <- function(x, method = "default"){
 
     }
 
+    OUT <- OUT[complete.cases(OUT), ]
     OUT <- do.call(rbind, x)
     invisible(return(OUT))
 
   } else if (method == "datavyu2") {
-    print("This section hasn't been created yet")
+    for (i in seq(x)){
+      fourth <- seq(4,ncol(x[[i]]),4)
+      trialnames <- colnames(x[[i]])
+      trialnames[fourth] <- sub('\\..*', '\\.code01', names(x[[i]][fourth]))
+      names(x[[i]]) <- trialnames
+
+      if (is.na(x[[i]]$coder2.onset[1])){
+        x[[i]] <- NA
+        next()
+      }
+
+      trial <- rep(0,length(x[[i]]$coder2.onset[!is.na(x[[i]]$coder2.onset)]))
+      ttrial <- x[[i]]$trial.onset[!is.na(x[[i]]$trial.onset)]
+
+      for(t in 1:length(trial)){
+        for(tt in 1:length(ttrial)){
+          if(x[[i]]$coder2.onset[t] == ttrial[tt]){
+            trial[t] <- tt
+          } else {
+            next()
+          }
+        }
+      }
+
+      x_subset <- as.list(rep("",length(trial)))
+
+      for(j in 1:length(na.omit(x_subset))){
+
+        x_subset[[j]] <- data.frame(na.omit(subset(x[[i]],x[[i]]$look_2.onset >= x[[i]]$trial.onset[j] &
+                                                     x[[i]]$look_2.onset <= x[[i]]$trial.offset[j],
+                                                   select = c(look_2.onset, look_2.offset, look_2.code01))))
+
+        x_subset[[j]] <- dplyr::mutate(x_subset[[j]], look_2.duration = look_2.offset - look_2.onset)
+
+        x_subset[[j]]$trial <- rep(trial[j], length(x_subset[[j]]$look_2.duration))
+
+        x_subset[[j]]$coder2.code01 <- rep(x[[i]]$coder2.code01[j], length(x_subset[[j]]$look_2.duration))
+
+        x_subset[[j]]$part <- rep(x[[i]]$participant.code01[1], length(x_subset[[j]]$look_2.duration))
+
+      }
+
+      x[[i]] <- do.call(rbind, x_subset)
+    }
+
+    OUT <- do.call(rbind, x)
+    OUT <- OUT[complete.cases(OUT), ]
+    invisible(return(OUT))
 
   } else if (method == "default") {
     print("You need to choose a method")

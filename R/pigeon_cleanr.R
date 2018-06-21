@@ -77,6 +77,7 @@ pigeon_clean <- function(x, method = "default"){
       names(x[[i]]) <- trialnames
 
       if (is.na(x[[i]]$coder1.onset[1])){
+        x[[i]] <- NA
         next()
       }
 
@@ -115,10 +116,11 @@ pigeon_clean <- function(x, method = "default"){
 
     }
 
+    OUT <- OUT[complete.cases(OUT), ]
     OUT <- do.call(rbind, x)
     invisible(return(OUT))
 
-  } else if (method == "datavyu2" | method == "reliability") {
+  } else if (method == "datavyu2") {
     for (i in seq(x)){
       fourth <- seq(4,ncol(x[[i]]),4)
       trialnames <- colnames(x[[i]])
@@ -126,6 +128,7 @@ pigeon_clean <- function(x, method = "default"){
       names(x[[i]]) <- trialnames
 
       if (is.na(x[[i]]$coder2.onset[1])){
+        x[[i]] <- NA
         next()
       }
 
@@ -164,6 +167,7 @@ pigeon_clean <- function(x, method = "default"){
     }
 
     OUT <- do.call(rbind, x)
+    OUT <- OUT[complete.cases(OUT), ]
     invisible(return(OUT))
 
   } else if (method == "default") {

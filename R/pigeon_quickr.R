@@ -11,7 +11,7 @@ pigeon_quick <- function(method, patterns.regex = c(rep(NULL,length(method))), p
 
   Inprogress <- list(rep("",length(method)))
 
-  if (method = "reliability"){
+  if (method == "reliability"){
     method <- c("datavyu","datavyu2")
     reliability <- TRUE
   }

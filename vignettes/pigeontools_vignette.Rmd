@@ -1,0 +1,138 @@
+---
+title: "Introduction to pigeontools"
+author: "Nour al-Zaghloul"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+The main feature of pigeontools is to provide a reproducible, accessible and easy to write workflow for data processing in Change Detection Tasks. pigeontools splits this process into three separate steps:    
+
+* pigeon_import
+    + batch imports data from datavyu, director, or habit files into a large list (raw)
+* pigeon_clean
+    + takes the raw data list and cleans it so all data is compilable, and compiles it to a dataframe
+* pigeon_process
+    + takes the above df and aggregates looking times for each participant, side and trial; converts to wide/long data (every line a participant/every line a trial)     
+
+This really is just for a single lab to use to automate a common data processing task without copy, pasting, and editing many independent functions. Also, it helps anyway trying to use our data/our methodology for the future. Below we’ll use sample data created in order to demonstrate these functions.      
+
+***     
+## pigeon_import      
+
+As it says on the tin, pigeon_import is all about importing the specific datafiles into a single list. This does not clean or process the data at all outside of what is completely necessary, but returns all the raw data. Two main reasons for this:     
+
+1. Splitting up the functions allows for a simpler code both in creating and writing in scripts (number of arguments per function)
+2. Gives you access to the collected raw data so you do not have to use the other two functions if they don’t fit your need
+
+Currently pigeon_import works on the habit, datavyu, and director data. It also has a “default” option that tries it’s best to parse other datafiles, but I wouldn’t count on it. 
+
+**pigeon_import( method = “default”, pattern.regex = NULL, pattern.exc = NULL, path = getwd())**
+
+*method* -- determines the type of datafile being imported and basic options that influences. Current accepted methods are:    
+
+* “default”
+    + You really shouldn’t use option yet
+* “habit”
+    + This exports the trial metadata only, not any livecoding being done
+* “habitlive”
+    + This exports the livecoding on habit, but not the trial metadata
+* “datavyu”
+    + Generally what’s being focused on in this package. Compiles raw looks for each trial and participants. This is using the default method of exporting from datavyu and only for coder 1. Only ends up using look duration, participant code, looking, trial.
+* "datavyu2"
+    + Same as above, but keeps coder2 and look2 data. Used for reliability testing.
+* “director”
+    + probably the weirdest and most unusable data type coming out of raw. Reads in the tab-deliminated files basically. Anything done to it is done in the cleaning step.
+
+*pattern.regex* -- uses a regular expression to determine which filenames to read.       
+
+*pattern.exc* -- uses a regular expression to exclude from files caught in the above filenames.      
+
+*path* -- determines where these files are read (default is the current wd)    
+
+***     
+## pigeon_clean     
+
+pigeon_clean takes a raw data list (as exported from above) and cleans each element to become a usable dataframe. 
+
+
+**pigeon_clean(x, method = "default")**      
+
+
+*x* -- is the data to be cleaned. It needs to be the raw data (as imported in *pigeon_import*) in a list.    
+
+*method* -- determines how the data is being cleaned. Current accepted methods are:    
+
+* “habit”
+* “director”
+* “datavyu”
+* "datavyu2"
+    
+
+
+***     
+## pigeon_process     
+
+*pigeon_process* takes the cleaned data (from above) and aggregates the looking, creates a single dataframe for all the data, and combines multiple dataframes (e.g. datavyu & habit).      
+
+**pigeon_process(x = list(), method = "default", endformat = "wide", join = "inner", coder = NULL)**      
+
+*x* -- is the data being processed (formatted in a standard way, as produced by pigeon_clean). Needs to be a list of the two data types. It needs to be two exactly for right now.     
+
+*method* -- the types of data being processed. Needs to be in the same order and amount as the elements in list x. Current accepted methods are:    
+ 
+* "reliability"
+    + This would be the only method selected if used. Determines the reliability of each coder to a reference coder (coder argument)
+* "datavyu"
+* "datavyu2"
+* "habit"
+* "director"
+
+*endformat* -- determines whether the data will output as "wide" (default) or "long".     
+
+*join* -- determines how the different data will be combined. dplyr joins are used (inner, left, right, semi)     
+
+*coder* -- used only for method = "reliability". Determines who is the reference coder. If left default (NULL) then it'll take whoever is the most frequent coder as the reference.
+
+***
+## Working with Change Detection Task Data:
+### Putting It All Together
+
+An example of using all the above functions:
+
+> datavyu_raw <- pigeon_import("datavyu", pattern.regex = "NumbR", pattern.exc = "Number Replication")
+> habit_raw <- pigeon_import("habit", pattern.regex = "Number Replication")
+>
+> datavyu_clean <- pigeon_clean(datavyu_raw, "datavyu")
+> habit_clean <- pigeon_clean(habit_raw, "habit")
+>
+> finished_data <- pigeon_process(x = list(datavyu_clean, habit_clean),
+>                                 method = c("datavyu", "habit"))       
+
+
+***     
+<!-- ### Datasets: pigeonCDT family       -->
+
+<!-- To explore Change Detection Task data cleaning and processing we need data to use. Included in pigeontools is the pigeonCDT family of sample datasets. These are:       -->
+
+<!-- * pigeonCDT_rawfiles ??? -->
+<!-- * pigeonCDT_rawbit -->
+<!-- * pigeonCDT_rawvyu -->
+<!-- * pigeonCDT_rawter -->
+<!-- * pigeonCDT_cleanbit -->
+<!-- * pigeonCDT_cleanvyu -->
+<!-- * pigeonCDT_cleanter -->
+
+<!-- For raw & clean habit, datavyu, and director data respectively.  -->
+
+

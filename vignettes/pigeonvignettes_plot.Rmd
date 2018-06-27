@@ -13,4 +13,17 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-A tertiary feature of **pigeontools** is to be able to quickly call up common ggplot2 graph types.
+A tertiary feature of **pigeontools** is to be able to quickly call up common ggplot2 graph types. This is just for exploratory plots and is not meant for finalised plots to be published or presented.     
+
+> pigeon_plot(method = "default")     
+
+Currently there is only one coded ggplot2 graph: "boxjitter". This produces a box & jitter plot of whatever data it follows.   
+
+***   
+
+**To Use:**      
+
+
+> ggplot(data, aes(x, y)) + pigeon_plot("boxjitter")
+
+<!-- GRAPH!!! -->

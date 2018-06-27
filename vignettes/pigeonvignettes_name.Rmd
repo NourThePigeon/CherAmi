@@ -13,4 +13,27 @@ vignette: >
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-The secondary feature of **pigeontools** is to quickly clean and filter participant data based on predetermined criteria.
+The secondary feature of **pigeontools** is to quickly clean and filter participant data based on predetermined criteria. This cannot be done as a standalone function, it requires criteria csv's or dataframes to determine how participants are filtered. Currently there are 2 types of participants you can filter:     
+
+* Birth Data
+
+* Death Data
+
+
+
+> pigeon_name(x, ..., criteria, method = "default", save = TRUE, name = "default", unknowns = 2)     
+
+*x, ...* are the dataframes/.csv's to be loaded in as data.     
+
+*criteria* is a dataframe (or file location) with the same column names as the data and values for all the things you don't want in your participant data.    
+
+*method* how to filter:    
+
+* "birth"
+    + removes names from vital statistcs records based on criteria
+* "death"
+    + removes names from vital statistics records based on death data
+    
+*save* determines if it exports .csv's or not.      
+
+*unkowns* determines the limit on how many NAs there can be to still be included for the criteria. E.g. if we we don't know gestation and APGAR but the weight is valid, and unkowns = 2, we would keep their information. unkowns = 1 would toss them.       

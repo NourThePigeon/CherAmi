@@ -1,5 +1,5 @@
 ---
-title: "Introduction to pigeontools"
+title: "Change Detection Task functions (import, clean, process)"
 author: "Nour al-Zaghloul"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette

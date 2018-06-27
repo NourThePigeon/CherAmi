@@ -1,0 +1,16 @@
+---
+title: "Quick Plot Functions (plot)"
+author: "Nour al-Zaghloul"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+A tertiary feature of **pigeontools** is to be able to quickly call up common ggplot2 graph types.

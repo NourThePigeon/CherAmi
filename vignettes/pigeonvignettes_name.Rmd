@@ -1,0 +1,16 @@
+---
+title: "Participant Database Cleaning (name)"
+author: "Nour al-Zaghloul"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+The secondary feature of **pigeontools** is to quickly clean and filter participant data based on predetermined criteria.

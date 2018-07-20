@@ -6,7 +6,7 @@ pigeon_name <- function(x, ..., criteria, method = "default", save = TRUE, name 
 
   INPUT <- list(x, ...)
 
-  if(method == "birth" | method = "default"){
+  if(method == "birth" | method == "default"){
 
     if (!is.data.frame(criteria)){
       criteria <- read.csv(criteria, stringsAsFactors=FALSE)

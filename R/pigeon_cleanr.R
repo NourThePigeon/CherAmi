@@ -10,6 +10,7 @@ pigeon_clean <- function(x, method = "default"){
 
     for(i in seq(x)) {
 
+      ##!habit: once I finish classifyr this would be where to implement. would add flexibility
       x[[i]]$Trial <- as.integer(x[[i]]$Trial)
       x[[i]]$Repeat <- as.integer(x[[i]]$Repeat)
       x[[i]]$StimID <- as.integer(x[[i]]$StimID)
@@ -18,7 +19,7 @@ pigeon_clean <- function(x, method = "default"){
       x[[i]]$TotalLook <- as.integer(x[[i]]$TotalLook)
       x[[i]]$TotalLookAway <- as.integer(x[[i]]$TotalLookAway)
       x[[i]]$TotalLeft <- as.integer(x[[i]]$TotalLeft)
-      x[[i]]$TotalCenter <- as.integer(x[[i]]$TotalCenter)
+      x[[i]]$TotalCenter <- as.integer(x[[i]]$TotalCenter) ##!habit: add something to determine if it's 1,2, or 3 scope. Currently only works with 3 scope.
       x[[i]]$TotalRight <- as.integer(x[[i]]$TotalRight)
       x[[i]]$LookEnabled <- as.integer(x[[i]]$LookEnabled)
       x[[i]]$LookDisabled <- as.integer(x[[i]]$LookDisabled)

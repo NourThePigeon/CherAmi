@@ -5,7 +5,7 @@
 #' @return A dataframe with usable, organised, and standardized but not processed data.
 #' @example
 #' pigeon_clean(mydata1, "datavyu")
-pigeon_clean <- function(x, method = "default"){
+pigeon_clean <- function(x, method = "datavyu"){
   if (method == "habit") {
 
     for(i in seq(x)) {
@@ -33,13 +33,16 @@ pigeon_clean <- function(x, method = "default"){
 
   } else if (method == "director"){
 
+    ##$ Cleans up the part_info
     files <- names(x)
     files <- gsub("\\..*", "", files)
     numbers <- gsub("[^[:digit:]]", "", files)
     study <- gsub("[[:digit:]]", "", files)
 
+    ##$ This is the actual cleaning, director needs a lot of it.
     for(i in seq(x)) {
 
+      ##. Cleans out missing data and attaches metadata to each line.
       x[[i]][x[[i]] == ""] <- NA
       x[[i]] <- data.frame(x[[i]], stringsAsFactors = FALSE)
 
@@ -71,6 +74,9 @@ pigeon_clean <- function(x, method = "default"){
 
   } else if (method == "datavyu"){
 
+    ##. This renames the fourth column to end in ".code01" instead of ".original"
+    ##$     Makes later processing much easier.
+    ##!datavyu: check to see if I included this in importr, should be here not there.
     for (i in seq(x)){
       fourth <- seq(4,ncol(x[[i]]),4)
       trialnames <- colnames(x[[i]])
@@ -82,6 +88,8 @@ pigeon_clean <- function(x, method = "default"){
         next()
       }
 
+      ##$ Keeps track of the correct trials done
+      ##.     Oft for reliability checking we won't do every trial. This screws up R w/o this code.
       trial <- rep(0,length(x[[i]]$coder1.onset[!is.na(x[[i]]$coder1.onset)]))
       ttrial <- x[[i]]$trial.onset[!is.na(x[[i]]$trial.onset)]
 
@@ -95,6 +103,7 @@ pigeon_clean <- function(x, method = "default"){
         }
       }
 
+      ##$ Corresponds all the data together
       x_subset <- as.list(rep("",length(trial)))
 
       for(j in 1:length(na.omit(x_subset))){
@@ -122,6 +131,8 @@ pigeon_clean <- function(x, method = "default"){
     invisible(return(OUT))
 
   } else if (method == "datavyu2") {
+    ##$ Same exact thing as datavyu, but for second coder (reliability step)
+
     for (i in seq(x)){
       fourth <- seq(4,ncol(x[[i]]),4)
       trialnames <- colnames(x[[i]])
@@ -171,8 +182,6 @@ pigeon_clean <- function(x, method = "default"){
     OUT <- OUT[complete.cases(OUT), ]
     invisible(return(OUT))
 
-  } else if (method == "default") {
-    print("You need to choose a method")
   }
 
 }

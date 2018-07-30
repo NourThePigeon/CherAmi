@@ -2,7 +2,9 @@
 
 
 pigeon_name <- function(x, ..., criteria, method = "default", save = TRUE, name = "default", unknowns = 2){
-
+  ##!function: Comment everything
+  ##!function: Needs to rework everything to make simplier and work better
+  ##!function: Add documentation
 
   INPUT <- list(x, ...)
 
@@ -139,3 +141,7 @@ pigeon_name <- function(x, ..., criteria, method = "default", save = TRUE, name 
 }
 
 
+##$ Shortcut
+pname <- function(x, ..., criteria, method = "default", save = TRUE, name = "default", unknowns = 2){
+  pigeon_name(x, ..., criteria, method, save, name, unknowns)
+}

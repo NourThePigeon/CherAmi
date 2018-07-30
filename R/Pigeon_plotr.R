@@ -4,7 +4,9 @@
 #' @example
 #' pigeon_plot("boxjitter")
 pigeon_plot <- function(method = "default"){
+  ##$ Made for quick exploration, not actual plotting
 
+  ##$ Simple Box & Jitter plot
   if (method == "default" | method == "boxjitter"){
 
   list(
@@ -18,8 +20,8 @@ pigeon_plot <- function(method = "default"){
 
 }
 
-##! method = "" argument: default, box, jitter, boxjitter, density, timecourse/series
 
-
-
-
+##$ Shortcut
+pplot <- function(method = "default"){
+  pigeon_plot(method)
+}

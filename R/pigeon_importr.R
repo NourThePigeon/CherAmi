@@ -9,12 +9,14 @@
 #' pigeon_import("datavyu", "NumbR10", "Number Replication")
 #' pigeon_import("habit", "Number Replication")
 #' pigeon_import("director", "MR10", ".txt", "./data")
-pigeon_import <- function(method = "default", pattern.regex = NULL, pattern.exc = NULL, path = getwd()){
+pigeon_import <- function(method = "datavyu", pattern.regex = NULL, pattern.exc = NULL, path = getwd()){
 
+  ##$ This is a function inside pigeon_import. It does the most basic job of pigeon_import.
+  ##.     IE finding the file you want and reading them sensibly into a large list.
   import_base <- function(path = getwd(), pattern.regex = NULL, pattern.exc = NULL, pattern.ext = ".csv") {
     files <- list.files(path, pattern = pattern.ext)
     if(is.character(pattern.regex)) {
-      files <- files[grepl(pattern.regex,files)]
+      files <- files[grepl(pattern.regex, files)]
     }
     if(is.character(pattern.exc)){
       files <- files[!grepl(pattern.exc, files)]
@@ -27,13 +29,13 @@ pigeon_import <- function(method = "default", pattern.regex = NULL, pattern.exc 
     invisible(return(files_list))
   }
 
-  if (method == "default"){
+  if (method == "habit"){
+    ##$ habit outputs data two ways on top of each other. This takes the top half.
+    ##$      This has overall data and per-look data following in columns.
 
     OUT <- import_base(path, pattern.regex, pattern.exc)
 
-  } else if (method == "habit"){
-
-    OUT <- import_base(path, pattern.regex, pattern.exc)
+    ##. This removes the bottom section of the habit output
     for (i in seq(OUT)) {
       srow <- OUT[[i]]$SubjectID
       srow <- grep("Phase", srow)
@@ -46,12 +48,16 @@ pigeon_import <- function(method = "default", pattern.regex = NULL, pattern.exc 
     invisible(return(OUT))
 
   } else if (method == "habitlive"){
+    ##$ This exports the bottom section of the habit output.
+    ##$     This has per-look data by row.
 
     OUT <- import_base(path, pattern.regex, pattern.exc)
-    files <- list.files(path, pattern = pattern.regex)
-    if(is.character(pattern.exc)){
-      files <- files[!grepl(pattern.exc, files)]
+    files <- list.files(path, pattern = pattern.regex) ##!habitlive: check this out. I think it's redundant.
+    if(is.character(pattern.exc)){ ##!habitlive: same as above
+      files <- files[!grepl(pattern.exc, files)] ##!habitlive: same as above
     }
+
+    ##. This removes the top section of the habit output
     for (i in seq(OUT)) {
       srow <- OUT[[i]]$SubjectID
       srow <- grep("Phase", srow)
@@ -75,9 +81,12 @@ pigeon_import <- function(method = "default", pattern.regex = NULL, pattern.exc 
     invisible(return(OUT))
 
   } else if (method == "datavyu" | method == "datavyu2" | method == "reliability"){
+    ##$ All three of these are imported the same way since they use the same files.
 
     OUT <- import_base(path, pattern.regex, pattern.exc)
 
+    ##. This renames the fourth column to end in ".code01" instead of ".original"
+    ##$     Makes later processing much easier.
     for (i in seq(OUT)){
       fourth <- seq(4, ncol(OUT[[i]]), 4)
       trialnames <- colnames(OUT[[i]])
@@ -88,23 +97,36 @@ pigeon_import <- function(method = "default", pattern.regex = NULL, pattern.exc 
     invisible(return(OUT))
 
   } else if (method == "director"){
-    pattern.ext = ".txt"
-    OUT <- import_base(path, pattern.regex, pattern.exc, pattern.ext)
+    ##$ This is the most different since director uses tab-delimination, not comma.
+    ###     Director is also annoying how it outputs data so we have to do it manually.
 
+    pattern.ext = ".txt"
+    OUT <- import_base(path, pattern.regex, pattern.exc, pattern.ext) ##!import_base: add in functionality to export filenames instead of raw data as well
+
+    ##. records the filenames.
+    ##$     important because import_base loses that info and oft director output has no part_info
     files <- list.files(path, pattern = pattern.ext)
     if(is.character(pattern.regex)) {
-      files <- files[grepl(pattern.regex,files)]
+      files <- files[grepl(pattern.regex, files)]
     }
     if(is.character(pattern.exc)){
       files <- files[!grepl(pattern.exc, files)]
     }
 
+    ##. Actually separates out the tabs into columns
     for(i in seq(OUT)){
       OUT[[i]] <- stringr::str_split_fixed(as.vector(OUT[[i]]), "\t", n = Inf)
     }
 
+    ##. Names the list elements so we know what participant it is.
     names(OUT) <- files
 
     invisible(return(OUT))
   }
+}
+
+
+##$ Shortcut
+pimport <- function(method = "datavyu", pattern.regex = NULL, pattern.exc = NULL, path = getwd()){
+  pigeon_import(method, pattern.regex, pattern.exc, path)
 }

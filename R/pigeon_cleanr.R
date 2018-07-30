@@ -186,3 +186,8 @@ pigeon_clean <- function(x, method = "datavyu"){
 
 }
 
+
+##$ Shortcut
+pclean <- function(x, method = "datavyu"){
+  pigeon_clean(x, method)
+}

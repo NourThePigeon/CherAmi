@@ -34,3 +34,9 @@ pigeon_quick <- function(method, patterns.regex = c(rep(NULL,length(method))), p
   invisible(return(OUT))
 
 }
+
+
+##$ Shortcut
+pquick <- function(method, patterns.regex = c(rep(NULL,length(method))), patterns.exc = c(rep(NULL,length(method))), path = c(rep(getwd(),length(method))), coder = NULL){
+  pigeon_quick(method, patterns.regex, patterns.exc, path, coder)
+}

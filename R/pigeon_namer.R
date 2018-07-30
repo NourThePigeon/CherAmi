@@ -141,3 +141,7 @@ pigeon_name <- function(x, ..., criteria, method = "default", save = TRUE, name 
 }
 
 
+##$ Shortcut
+pname <- function(x, ..., criteria, method = "default", save = TRUE, name = "default", unknowns = 2){
+  pigeon_name(x, ..., criteria, method, save, name, unknowns)
+}

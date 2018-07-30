@@ -163,3 +163,9 @@ pigeon_process <- function(x, method = "default", endformat = "wide", join = "in
   invisible(return(OUT))
 
 }
+
+
+##$ Shortccut
+pprocess <- function(x, method = "default", endformat = "wide", join = "inner", coder = NULL){
+  pigeon_process(x, method, endformat, join, coder)
+}

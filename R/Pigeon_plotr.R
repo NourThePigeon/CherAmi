@@ -20,8 +20,8 @@ pigeon_plot <- function(method = "default"){
 
 }
 
-##! method = "" argument: default, box, jitter, boxjitter, density, timecourse/series
 
-
-
-
+##$ Shortcut
+pplot <- function(method = "default"){
+  pigeon_plot(method)
+}

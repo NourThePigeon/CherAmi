@@ -32,9 +32,9 @@ pigeon_import <- function(method = "datavyu", pattern.regex = NULL, pattern.exc 
   if (method == "habit"){
     ##$ habit outputs data two ways on top of each other. This takes the top half.
     ##$      This has overall data and per-look data following in columns.
-    
+
     OUT <- import_base(path, pattern.regex, pattern.exc)
-    
+
     ##. This removes the bottom section of the habit output
     for (i in seq(OUT)) {
       srow <- OUT[[i]]$SubjectID
@@ -47,16 +47,16 @@ pigeon_import <- function(method = "datavyu", pattern.regex = NULL, pattern.exc 
 
     invisible(return(OUT))
 
-  } else if (method == "habitlive"){ 
+  } else if (method == "habitlive"){
     ##$ This exports the bottom section of the habit output.
-    ##$     This has per-look data by row.    
-    
+    ##$     This has per-look data by row.
+
     OUT <- import_base(path, pattern.regex, pattern.exc)
     files <- list.files(path, pattern = pattern.regex) ##!habitlive: check this out. I think it's redundant.
     if(is.character(pattern.exc)){ ##!habitlive: same as above
       files <- files[!grepl(pattern.exc, files)] ##!habitlive: same as above
     }
-    
+
     ##. This removes the top section of the habit output
     for (i in seq(OUT)) {
       srow <- OUT[[i]]$SubjectID
@@ -99,7 +99,7 @@ pigeon_import <- function(method = "datavyu", pattern.regex = NULL, pattern.exc 
   } else if (method == "director"){
     ##$ This is the most different since director uses tab-delimination, not comma.
     ###     Director is also annoying how it outputs data so we have to do it manually.
-    
+
     pattern.ext = ".txt"
     OUT <- import_base(path, pattern.regex, pattern.exc, pattern.ext) ##!import_base: add in functionality to export filenames instead of raw data as well
 
@@ -123,4 +123,10 @@ pigeon_import <- function(method = "datavyu", pattern.regex = NULL, pattern.exc 
 
     invisible(return(OUT))
   }
+}
+
+
+##$ Shortcut
+pimport <- function(method = "datavyu", pattern.regex = NULL, pattern.exc = NULL, path = getwd()){
+  pigeon_import(method, pattern.regex, pattern.exc, path)
 }

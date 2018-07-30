@@ -9,11 +9,17 @@
 #' @example
 #' pigeon_process(list(vyu.data, habit.data), c("datavyu", "habit"), join = "left")
 pigeon_process <- function(x, method = "default", endformat = "wide", join = "inner", coder = NULL){
+  ##!function: This is one of the messier and more specific functions I made.
+  ###! Find a way to generalize it if possible.
 
+  ##$ Creates a list the size of method amounts in order to work in a loop
   OUT_temp <- list(rep("",length(method)))
 
+  ##$ populates above list with aggregated data from above
   for (i in seq(x)){
     if(method == "reliability"){
+      ##$ reliability will run pprocess assuming it's datavyu and datavyu 2
+
       if("coder1.code01" %in% colnames(x[[1]])){
         reliability <- pigeon_process(x, method = c("datavyu","datavyu2"), endformat = "long")
       } else {
@@ -23,21 +29,28 @@ pigeon_process <- function(x, method = "default", endformat = "wide", join = "in
       reliability[is.na(reliability)] <- 0
       reliability$diff <- abs(((reliability$a.x-reliability$a.y)+(reliability$d.x-reliability$d.y))/2)
 
+      ##$ Determines who the main coder is if not specified
       nms <- c(reliability$coder1.code01, reliability$coder2.code01)
       if (is.null(coder)){
         coder <- names(which(table(nms) == max(table(nms))))
       } else if (coder == "matrix"){
       }
 
+      ##. Removes the main coder from the rest of the coders
       nms <- unique(nms)
       nms <- nms[!nms %in% coder]
 
+      ##. co = correlation
+      ##. mn = mean difference
+      ##. tr = total number of trials
       nms_col <- paste(rep(nms, each = 3), c("co", "mn", "tr"),sep=".")
 
+      ##$ Creates the bones of the correlation matrix
       OUT <- data.frame(matrix(NA, nrow = length(coder), ncol = length(nms_col)))
       colnames(OUT) <- nms_col
       rownames(OUT) <- coder
 
+      ##$ Creates the correlation matrix
       for(j in seq(nms)){
         looktemp <- dplyr::filter(reliability, coder1.code01 == coder & coder2.code01 == nms[j] |
                                     coder1.code01 == nms[j] & coder2.code01 == coder)
@@ -122,6 +135,7 @@ pigeon_process <- function(x, method = "default", endformat = "wide", join = "in
 
   }
 
+  ##$ Decides how you want to join the list items
   if (join == "full"){
     OUT <- dplyr::full_join(OUT_temp[[1]],OUT_temp[[2]], by = c("part", "study","trial"))
   } else if (join == "left"){
@@ -134,8 +148,10 @@ pigeon_process <- function(x, method = "default", endformat = "wide", join = "in
     OUT <- dplyr::inner_join(OUT_temp[[1]],OUT_temp[[2]], by = c("part", "study","trial"))
   }
 
+  ##$ Determines how you want the end format to be organised
   if (endformat == "wide"){
     if (any(grepl("director", method))){
+      ##. Director has extra variables
       OUT_wide <- tidyr::gather(OUT, info, val, -trial, -part, -study, -sex, -code, -agemos)
     } else {
       OUT_wide <- tidyr::gather(OUT, info, val, -trial, -part, -study, -order)

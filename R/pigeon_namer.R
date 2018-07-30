@@ -2,7 +2,9 @@
 
 
 pigeon_name <- function(x, ..., criteria, method = "default", save = TRUE, name = "default", unknowns = 2){
-
+  ##!function: Comment everything
+  ##!function: Needs to rework everything to make simplier and work better
+  ##!function: Add documentation
 
   INPUT <- list(x, ...)
 

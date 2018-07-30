@@ -8,19 +8,23 @@
 #' @example
 #' pigeon_quick(c("datavyu", "habit"), c("NumbR10", "Number Replication"), c("Number Replication", ".txt"))
 pigeon_quick <- function(method, patterns.regex = c(rep(NULL,length(method))), patterns.exc = c(rep(NULL,length(method))), path = c(rep(getwd(),length(method))), coder = NULL){
+  ##$ Basically just runs through the pimport, pclean, and pprocess with defaults
 
   Inprogress <- list(rep("",length(method)))
 
+  ##$ Sets parameters for doing reliability
   if (method == "reliability"){
     method <- c("datavyu","datavyu2")
     reliability <- TRUE
   }
 
+  ##. Completely does one element before moving onto the next
   for(i in seq(method)){
     Inprogress[[i]] <- pigeon_import(method[i], patterns.regex[i], patterns.exc[i], path[i])
     Inprogress[[i]] <- pigeon_clean(Inprogress[[i]], method[i])
   }
 
+  ##. Finishes the pprocess step and accounts for reliability
   if (reliability){
     OUT <- pigeon_process(x = Inprogress, method = "reliability", coder = coder)
   } else{

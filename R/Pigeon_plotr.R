@@ -4,7 +4,9 @@
 #' @example
 #' pigeon_plot("boxjitter")
 pigeon_plot <- function(method = "default"){
+  ##$ Made for quick exploration, not actual plotting
 
+  ##$ Simple Box & Jitter plot
   if (method == "default" | method == "boxjitter"){
 
   list(

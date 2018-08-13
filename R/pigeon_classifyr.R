@@ -13,6 +13,6 @@ pigeon_classify <- function(x, null_values = NULL){
 ##$ Shortcut
 pclassify <- function(x, null_values = NULL){
 
-  pigeon_classify((x, null_values))
+  pigeon_classify(x, null_values)
 
 }

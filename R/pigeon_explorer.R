@@ -1,7 +1,7 @@
-# library(ggplot2)
-# library(tidyverse)
-# library(shiny)
-# library(devtools)
+library(ggplot2)
+library(tidyverse)
+library(shiny)
+library(devtools)
 
 ui <- fluidPage(
 
@@ -11,7 +11,7 @@ ui <- fluidPage(
 
   sidebarLayout(
     sidebarPanel(
-      fileInput(inputId = "file1",
+      fileInput(inputId = "file",
                 label = "Choose CSV File",
                 accept = c(
                   "text/csv",
@@ -22,17 +22,49 @@ ui <- fluidPage(
       checkboxInput(inputId = "header",
                     label = "Header",
                     value = TRUE),
-      selectInput(inputId = "graph_1",
-                  label = "Choose a graph",
-                  choices = c("density", "histogram", "box", "jitter", "violin"))
+      checkboxInput(inputId = "head",
+                    label = "Head",
+                    value = FALSE)
     ),
     mainPanel(
-      tableOutput("contents")
+      tabsetPanel(
+        type = "tabs",
+        tabPanel("Plot", plotOutput("plot")),
+        tabPanel("Table", tableOutput("table"))
+      )
     )
   )
 )
 
 server <- function(input, output) {
+
+  output$table <- renderTable({
+
+    req(input$file)
+
+    rawdf <- read.csv(input$file$datapath,
+                       header = input$header)
+
+    if(input$head){
+      return(head(rawdf))
+    }else{
+      return(rawdf)
+    }
+
+  })
+
+  output$plot <- renderPlot({
+    req(input$file)
+
+    rawdf <- read.csv(input$file$datapath,
+                      header = input$header)
+
+    dfplot <- ggplot(rawdf, aes(x = rawdf[,1])) +
+    geom_density()
+
+    return(dfplot)
+
+  })
 
 }
 

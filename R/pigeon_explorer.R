@@ -19,6 +19,14 @@ ui <- fluidPage(
                   ".csv")
       ),
       tags$hr(),
+
+      selectInput(inputId = "plotchoice",
+                  label = "Choose your plot",
+                  choices = c("Density", "Histogram", "Rug")),
+      selectInput(inputId = "xchoice",
+                  label = "Choose your x variable",
+                  choices = c("names()")),
+
       checkboxInput(inputId = "header",
                     label = "Header",
                     value = TRUE),
@@ -59,8 +67,17 @@ server <- function(input, output) {
     rawdf <- read.csv(input$file$datapath,
                       header = input$header)
 
+    if(input$plotchoice == "Density"){
+      geomgraph <- geom_density()
+    } else if(input$plotchoice == "Histogram"){
+      geomgraph <- geom_histogram()
+    } else if (input$plotchoice == "Rug"){
+      geomgraph <- geom_rug()
+    }
+
+
     dfplot <- ggplot(rawdf, aes(x = rawdf[,1])) +
-    geom_density()
+    geomgraph
 
     return(dfplot)
 

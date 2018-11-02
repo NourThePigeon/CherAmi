@@ -49,14 +49,15 @@ ui <- fluidPage(
         condition = "input.var_quant == 2",
         uiOutput("ychoice")
       ),
-      checkboxInput(inputId = "aes_include",
-                    label = "Grouping?",
-                    value = FALSE),
+      radioButtons(inputId = "aes_include",
+                   label = "Grouping?",
+                   choices = c("Yes", "No"),
+                   selected = "No"),
       conditionalPanel(
-        condition = "input.aes_include == TRUE",
+        condition = "input.aes_include == 'Yes'",
         selectInput(inputId = "aestype",
                     label = "What type of grouping?",
-                    choices = c("Color", "Fill", "Size", "Shape", "Linetype")),
+                    choices = c("Color", "Fill", "Size", "Shape", "Linetype", "Facet")),
         uiOutput("aeschoice")
       )
 
@@ -142,7 +143,7 @@ server <- function(input, output) {
         geomgraph <- geom_rug()
       }
 
-      if (input$aes_include){
+      if (input$aes_include == "Yes"){
         if (input$aestype == "Color"){
           dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], color = rawdf[,input$aeschoice])) +
             geomgraph
@@ -158,6 +159,10 @@ server <- function(input, output) {
         } else if (input$aestype == "Linetype"){
           dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], linetype = rawdf[,input$aeschoice])) +
             geomgraph
+        } else if (input$aestype == "Facet"){
+          dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice])) +
+            geomgraph +
+            facet_grid(row = input$aeschoice)
         }
 
       } else {
@@ -177,7 +182,7 @@ server <- function(input, output) {
         geomgraph <- geom_violin()
       }
 
-      if(input$aes_include){
+      if(input$aes_include == "Yes"){
         if (input$aestype == "Color"){
           dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], y = rawdf[,input$ychoice], color = rawdf[,input$aeschoice])) +
             geomgraph
@@ -187,12 +192,16 @@ server <- function(input, output) {
         } else if (input$aestype == "Size") {
           dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], y = rawdf[,input$ychoice], size = rawdf[,input$aeschoice])) +
             geomgraph
-        }  else if (input$aestype == "Shape") {
+        } else if (input$aestype == "Shape") {
           dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], y = rawdf[,input$ychoice], shape = rawdf[,input$aeschoice])) +
             geomgraph
-        }  else if (input$aestype == "Linetype") {
+        } else if (input$aestype == "Linetype") {
           dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], y = rawdf[,input$ychoice], linetype = rawdf[,input$aeschoice])) +
             geomgraph
+        } else if (input$aestype == "Facet") {
+          dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], y = rawdf[,input$ychoice])) +
+            geomgraph +
+            facet_grid(row = input$aeschoice)
         }
       } else {
         dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], y = rawdf[,input$ychoice])) +

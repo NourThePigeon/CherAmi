@@ -43,10 +43,21 @@ ui <- fluidPage(
                     choices = c("Box", "Scatter", "Bar", "Violin"))
       ),
 
+
       uiOutput("xchoice"),
       conditionalPanel(
         condition = "input.var_quant == 2",
         uiOutput("ychoice")
+      ),
+      checkboxInput(inputId = "aes_include",
+                    label = "Grouping?",
+                    value = FALSE),
+      conditionalPanel(
+        condition = "input.aes_include == TRUE",
+        selectInput(inputId = "aestype",
+                    label = "What type of grouping?",
+                    choices = c("Color", "Fill", "Size", "Shape", "Linetype")),
+        uiOutput("aeschoice")
       )
 
     ),
@@ -103,22 +114,58 @@ server <- function(input, output) {
                 choices = var_names)
   })
 
+  output$aeschoice <- renderUI({
+    req(input$file)
+
+    rawdf <- as.data.frame(read.csv(input$file$datapath,
+                                    header = input$header))
+
+    var_names <- names(rawdf)
+
+    selectInput(inputId = "aeschoice",
+                label = "Choose grouping variable",
+                choices = var_names)
+  })
+
   output$plot <- renderPlot({
     req(input$file)
 
     rawdf <- as.data.frame(read.csv(input$file$datapath,
                       header = input$header))
 
-    if(input$var_quant == 1){
-      if(input$q1_plot == "Density"){
+    if (input$var_quant == 1){
+      if (input$q1_plot == "Density"){
         geomgraph <- geom_density()
-      } else if(input$q1_plot == "Histogram"){
+      } else if (input$q1_plot == "Histogram"){
         geomgraph <- geom_histogram()
       } else if (input$q1_plot == "Rug"){
         geomgraph <- geom_rug()
       }
-      dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice])) +
-        geomgraph
+
+      if (input$aes_include){
+        if (input$aestype == "Color"){
+          dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], color = rawdf[,input$aeschoice])) +
+            geomgraph
+        } else if (input$aestype == "Fill"){
+          dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], fill = rawdf[,input$aeschoice])) +
+            geomgraph
+        } else if (input$aestype == "Size"){
+          dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], size = rawdf[,input$aeschoice])) +
+            geomgraph
+        } else if (input$aestype == "Shape"){
+          dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], shape = rawdf[,input$aeschoice])) +
+            geomgraph
+        } else if (input$aestype == "Linetype"){
+          dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], linetype = rawdf[,input$aeschoice])) +
+            geomgraph
+        }
+
+      } else {
+        dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice])) +
+          geomgraph
+      }
+
+
     } else if (input$var_quant == 2){
       if(input$q2_plot == "Box"){
         geomgraph <- geom_boxplot()
@@ -129,9 +176,28 @@ server <- function(input, output) {
       } else if (input$q2_plot == "Violin"){
         geomgraph <- geom_violin()
       }
+
+      if(input$aes_include){
+        if (input$aestype == "Color"){
+          dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], y = rawdf[,input$ychoice], color = rawdf[,input$aeschoice])) +
+            geomgraph
+        } else if (input$aestype == "Fill") {
+          dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], y = rawdf[,input$ychoice], fill = rawdf[,input$aeschoice])) +
+            geomgraph
+        } else if (input$aestype == "Size") {
+          dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], y = rawdf[,input$ychoice], size = rawdf[,input$aeschoice])) +
+            geomgraph
+        }  else if (input$aestype == "Shape") {
+          dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], y = rawdf[,input$ychoice], shape = rawdf[,input$aeschoice])) +
+            geomgraph
+        }  else if (input$aestype == "Linetype") {
+          dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], y = rawdf[,input$ychoice], linetype = rawdf[,input$aeschoice])) +
+            geomgraph
+        }
+      } else {
         dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], y = rawdf[,input$ychoice])) +
           geomgraph
-
+      }
     }
 
     return(dfplot)

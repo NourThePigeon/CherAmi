@@ -66,7 +66,8 @@ ui <- fluidPage(
       tabsetPanel(
         type = "tabs",
         tabPanel("Plot", plotOutput("plot")),
-        tabPanel("Table", tableOutput("table"))
+        tabPanel("Table", tableOutput("table")),
+        tabPanel("R code", verbatimTextOutput("ggcode"))
       )
     )
   )
@@ -74,17 +75,34 @@ ui <- fluidPage(
 
 server <- function(input, output) {
 
-  output$table <- renderTable({
+  rawdf <- reactive({
+    req(input$file)
+    as.data.frame(read.csv(input$file$datapath,
+                           header = input$header))
+  })
 
+  var_names <- reactive({
+    names(rawdf())
+  })
+
+  lbl_names <- reactive({
+
+  })
+
+  #### Attempt to fix #####
+  # aes_var <- reactive({
+  #   if (input$aes_include == "Yes"){
+  #     input$aestype
+  #   }
+  # })
+
+  output$table <- renderTable({
     req(input$file)
 
-    rawdf <- as.data.frame(read.csv(input$file$datapath,
-                                    header = input$header))
-
     if(input$head){
-      return(head(rawdf))
+      return(head(rawdf()))
     }else{
-      return(rawdf)
+      return(rawdf())
     }
 
   })
@@ -92,47 +110,28 @@ server <- function(input, output) {
   output$xchoice <- renderUI({
     req(input$file)
 
-    rawdf <- as.data.frame(read.csv(input$file$datapath,
-                                    header = input$header))
-
-    var_names <- names(rawdf)
-
     selectInput(inputId = "xchoice",
                 label = "Choose x variable",
-                choices = var_names)
+                choices = var_names())
   })
 
   output$ychoice <- renderUI({
     req(input$file)
 
-    rawdf <- as.data.frame(read.csv(input$file$datapath,
-                                    header = input$header))
-
-    var_names <- names(rawdf)
-
     selectInput(inputId = "ychoice",
                 label = "Choose y variable",
-                choices = var_names)
+                choices = var_names())
   })
 
   output$aeschoice <- renderUI({
     req(input$file)
 
-    rawdf <- as.data.frame(read.csv(input$file$datapath,
-                                    header = input$header))
-
-    var_names <- names(rawdf)
-
     selectInput(inputId = "aeschoice",
                 label = "Choose grouping variable",
-                choices = var_names)
+                choices = var_names())
   })
 
   output$plot <- renderPlot({
-    req(input$file)
-
-    rawdf <- as.data.frame(read.csv(input$file$datapath,
-                      header = input$header))
 
     if (input$var_quant == 1){
       if (input$q1_plot == "Density"){
@@ -144,29 +143,31 @@ server <- function(input, output) {
       }
 
       if (input$aes_include == "Yes"){
+        ## Uses a reactive as a function argument. Does not work
+        # dfplot <- ggplot(rawdf(), aes(x = rawdf()[,input$xchoice], aes_var() = rawdf()[,input$aeschoice])) +
+        #   geomgraph
         if (input$aestype == "Color"){
-          dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], color = rawdf[,input$aeschoice])) +
+          dfplot <- ggplot(rawdf(), aes(x = rawdf()[,input$xchoice], color = rawdf()[,input$aeschoice])) +
             geomgraph
         } else if (input$aestype == "Fill"){
-          dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], fill = rawdf[,input$aeschoice])) +
+          dfplot <- ggplot(rawdf(), aes(x = rawdf()[,input$xchoice], fill = rawdf()[,input$aeschoice])) +
             geomgraph
         } else if (input$aestype == "Size"){
-          dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], size = rawdf[,input$aeschoice])) +
+          dfplot <- ggplot(rawdf(), aes(x = rawdf()[,input$xchoice], size = rawdf()[,input$aeschoice])) +
             geomgraph
         } else if (input$aestype == "Shape"){
-          dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], shape = rawdf[,input$aeschoice])) +
+          dfplot <- ggplot(rawdf(), aes(x = rawdf()[,input$xchoice], shape = rawdf()[,input$aeschoice])) +
             geomgraph
         } else if (input$aestype == "Linetype"){
-          dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], linetype = rawdf[,input$aeschoice])) +
+          dfplot <- ggplot(rawdf(), aes(x = rawdf()[,input$xchoice], linetype = rawdf()[,input$aeschoice])) +
             geomgraph
         } else if (input$aestype == "Facet"){
-          dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice])) +
+          dfplot <- ggplot(rawdf(), aes(x = rawdf()[,input$xchoice])) +
             geomgraph +
             facet_grid(row = input$aeschoice)
         }
-
       } else {
-        dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice])) +
+        dfplot <- ggplot(rawdf(), aes(x = rawdf()[,input$xchoice])) +
           geomgraph
       }
 
@@ -183,28 +184,31 @@ server <- function(input, output) {
       }
 
       if(input$aes_include == "Yes"){
+        ## Uses a reactive as a function argument. Does not work
+        # dfplot <- ggplot(rawdf(), aes(x = rawdf()[,input$xchoice], y = rawdf()[,input$ychoice], aes_var() = rawdf()[,input$aeschoice])) +
+        #   geomgraph
         if (input$aestype == "Color"){
-          dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], y = rawdf[,input$ychoice], color = rawdf[,input$aeschoice])) +
+          dfplot <- ggplot(rawdf(), aes(x = rawdf()[,input$xchoice], y = rawdf()[,input$ychoice], color = rawdf()[,input$aeschoice])) +
             geomgraph
         } else if (input$aestype == "Fill") {
-          dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], y = rawdf[,input$ychoice], fill = rawdf[,input$aeschoice])) +
+          dfplot <- ggplot(rawdf(), aes(x = rawdf()[,input$xchoice], y = rawdf()[,input$ychoice], fill = rawdf()[,input$aeschoice])) +
             geomgraph
         } else if (input$aestype == "Size") {
-          dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], y = rawdf[,input$ychoice], size = rawdf[,input$aeschoice])) +
+          dfplot <- ggplot(rawdf(), aes(x = rawdf()[,input$xchoice], y = rawdf()[,input$ychoice], size = rawdf()[,input$aeschoice])) +
             geomgraph
         } else if (input$aestype == "Shape") {
-          dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], y = rawdf[,input$ychoice], shape = rawdf[,input$aeschoice])) +
+          dfplot <- ggplot(rawdf(), aes(x = rawdf()[,input$xchoice], y = rawdf()[,input$ychoice], shape = rawdf()[,input$aeschoice])) +
             geomgraph
         } else if (input$aestype == "Linetype") {
-          dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], y = rawdf[,input$ychoice], linetype = rawdf[,input$aeschoice])) +
+          dfplot <- ggplot(rawdf(), aes(x = rawdf()[,input$xchoice], y = rawdf()[,input$ychoice], linetype = rawdf()[,input$aeschoice])) +
             geomgraph
         } else if (input$aestype == "Facet") {
-          dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], y = rawdf[,input$ychoice])) +
+          dfplot <- ggplot(rawdf(), aes(x = rawdf()[,input$xchoice], y = rawdf()[,input$ychoice])) +
             geomgraph +
             facet_grid(row = input$aeschoice)
         }
       } else {
-        dfplot <- ggplot(rawdf, aes(x = rawdf[,input$xchoice], y = rawdf[,input$ychoice])) +
+        dfplot <- ggplot(rawdf(), aes(x = rawdf()[,input$xchoice], y = rawdf()[,input$ychoice])) +
           geomgraph
       }
     }
@@ -213,6 +217,9 @@ server <- function(input, output) {
 
   })
 
+  output$ggcode <- renderText({
+    "Code goes here"
+  })
 }
 
 shinyApp(ui = ui, server = server)

@@ -39,11 +39,22 @@ ui <- fluidPage(
                    uiOutput("ychoice")),
                  conditionalPanel(
                    condition = "input.var_quant == 3",
-                   uiOutput("zchoice"))
+                   uiOutput("zchoice")),
+                 radioButtons(inputId = "aes_include",
+                              label = "Grouping?",
+                              choices = c("Yes", "No"),
+                              selected = "No"),
+                 conditionalPanel(
+                   condition = "input.aes_include == 'Yes'",
+                   selectInput(inputId = "aestype",
+                               label = "What type of grouping?",
+                               choices = c("Color", "Fill", "Size", "Shape", "Linetype", "Facet")),
+                   uiOutput("aeschoice")
+                   #TODO include number and types of graphs on this menu
 
                  ),
 
-        #TODO
+        #TODO dynamic plots instead of predetermined panels
         # tabPanel("Plots",
         #          uiOutput("mytabs")),
 
@@ -92,17 +103,23 @@ ui <- fluidPage(
                                selected = NULL))
                  ),
 
-        tabPanel("Aes",
-                 radioButtons(inputId = "aes_include",
-                              label = "Grouping?",
-                              choices = c("Yes", "No"),
-                              selected = "No"),
+        tabPanel("Theme",
+                textInput(inputId = "titletext"),
+                 #TODO change axis text
+                 #TODO change axis labels
+                 #TODO add legend
+                selectInput(inputId = "linedraw",
+                            label = "Add lines?",
+                            choices = c("None", "Horizontal", "Vertical", "Both"),
+                            selected = NULL),
                  conditionalPanel(
-                   condition = "input.aes_include == 'Yes'",
-                   selectInput(inputId = "aestype",
-                               label = "What type of grouping?",
-                               choices = c("Color", "Fill", "Size", "Shape", "Linetype", "Facet")),
-                   uiOutput("aeschoice"))
+                   condition = "input.linedraw == 'Horizontal' || input.linedraw == 'Both'",
+                   numericInput(inputId = "hline")),
+                 conditionalPanel(
+                   condition = "input.linedraw == 'Vertical' || input.linedraw == 'Both'",
+                   numericInput(inputId = "vline")),
+                 
+                )
         )
       )
 

@@ -1,2 +1,2 @@
 # pigeontools
-R Functions for Reserach
+R Functions for Research

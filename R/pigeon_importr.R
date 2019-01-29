@@ -124,9 +124,3 @@ pigeon_import <- function(method = "datavyu", pattern.regex = NULL, pattern.exc 
     invisible(return(OUT))
   }
 }
-
-
-##$ Shortcut
-pimport <- function(method = "datavyu", pattern.regex = NULL, pattern.exc = NULL, path = getwd()){
-  pigeon_import(method, pattern.regex, pattern.exc, path)
-}

@@ -181,13 +181,6 @@ pigeon_clean <- function(x, method = "datavyu"){
     OUT <- do.call(rbind, x)
     OUT <- OUT[complete.cases(OUT), ]
     invisible(return(OUT))
-
   }
 
-}
-
-
-##$ Shortcut
-pclean <- function(x, method = "datavyu"){
-  pigeon_clean(x, method)
 }

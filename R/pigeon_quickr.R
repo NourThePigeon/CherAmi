@@ -10,13 +10,13 @@
 pigeon_quick <- function(method, patterns.regex = c(rep(NULL,length(method))), patterns.exc = c(rep(NULL,length(method))), path = c(rep(getwd(),length(method))), coder = NULL){
   ##$ Basically just runs through the pimport, pclean, and pprocess with defaults
 
-  Inprogress <- list(rep("",length(method)))
-
   ##$ Sets parameters for doing reliability
   if (method == "reliability"){
     method <- c("datavyu","datavyu2")
     reliability <- TRUE
   }
+
+  Inprogress <- list(rep("",length(method)))
 
   ##. Completely does one element before moving onto the next
   for(i in seq(method)){
@@ -35,8 +35,3 @@ pigeon_quick <- function(method, patterns.regex = c(rep(NULL,length(method))), p
 
 }
 
-
-##$ Shortcut
-pquick <- function(method, patterns.regex = c(rep(NULL,length(method))), patterns.exc = c(rep(NULL,length(method))), path = c(rep(getwd(),length(method))), coder = NULL){
-  pigeon_quick(method, patterns.regex, patterns.exc, path, coder)
-}

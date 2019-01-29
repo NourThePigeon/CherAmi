@@ -20,8 +20,3 @@ pigeon_plot <- function(method = "default"){
 
 }
 
-
-##$ Shortcut
-pplot <- function(method = "default"){
-  pigeon_plot(method)
-}

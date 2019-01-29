@@ -33,9 +33,3 @@ pigeon_classify <- function(x, na_values = NA){
 return(x)
 }
 
-##$ Shortcut
-pclassify <- function(x, null_values = NULL){
-
-  pigeon_classify(x, null_values)
-
-}

@@ -126,8 +126,8 @@ pigeon_clean <- function(x, method = "datavyu"){
 
     }
 
-    OUT <- OUT[complete.cases(OUT), ]
     OUT <- do.call(rbind, x)
+    OUT <- OUT[complete.cases(OUT), ]
     invisible(return(OUT))
 
   } else if (method == "datavyu2") {

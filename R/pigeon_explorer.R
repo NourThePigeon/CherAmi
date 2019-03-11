@@ -104,7 +104,9 @@ ui <- fluidPage(
                  ),
 
         tabPanel("Theme",
-                textInput(inputId = "titletext"),
+                textInput(inputId = "titletext",
+                          label = "titletext",
+                          value = "TitleText"),
                  #TODO change axis text
                  #TODO change axis labels
                  #TODO add legend
@@ -114,11 +116,15 @@ ui <- fluidPage(
                             selected = NULL),
                  conditionalPanel(
                    condition = "input.linedraw == 'Horizontal' || input.linedraw == 'Both'",
-                   numericInput(inputId = "hline")),
+                   numericInput(inputId = "hline",
+                                label = "hline",
+                                value = 0)),
                  conditionalPanel(
                    condition = "input.linedraw == 'Vertical' || input.linedraw == 'Both'",
-                   numericInput(inputId = "vline")),
-                 
+                   numericInput(inputId = "vline",
+                                label = "vline",
+                                value = 0))
+
                 )
         )
       )

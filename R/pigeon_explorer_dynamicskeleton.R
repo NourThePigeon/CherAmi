@@ -14,9 +14,23 @@ ui <- fluidPage(
     sidebarPanel(
       tabsetPanel(
         type = "tabs",
-        tabPanel("Data"),
+        tabPanel("Data",
+
+                 fileInput(inputId = "file",
+                           label = "Choose CSV File",
+                           accept = c(
+                             "text/csv",
+                             "text/comma-separated-values,text/plain",
+                             ".csv")),
+                 checkboxInput(inputId = "header",
+                               label = "Header",
+                               value = TRUE),
+                 checkboxInput(inputId = "head",
+                               label = "Head",
+                               value = FALSE),
+                 tags$hr()),
         tabPanel("Layers",
-                 sliderInput("nTabs", 'No of Layers', 1,5,2),
+                 sliderInput("nTabs", 'No of Layers', 1,3,2),
                  uiOutput('layertabs')),
         tabPanel("Theme")
       )

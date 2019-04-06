@@ -5,7 +5,7 @@ Version: 0.4.0
 Author: Nour Al-Zaghloul <NourAlZaghloul@gmail.com> [aut, cre]
 Maintainer: Nour Al-Zaghloul <NourAlZaghloul@gmail.com>
 Description: Tools for streamlining lab workflow made for the. It's main purpose is to batch import, clean, and process raw data output from habit, datavyu, and director. It also provide a quick box/jitter plot setting and is able to sort through vital statistic & database information. Created for Nour & the Oakes Lab.
-License: What license is it under?
+License: GPL-3 | file LICENSE
 Encoding: UTF-8
 LazyData: true
 Imports:

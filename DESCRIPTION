@@ -1,22 +1,28 @@
 Package: pigeontools
-Type: Package
-Title: Tools for streamlining lab workflow
-Version: 0.4.0
-Author: Nour Al-Zaghloul <NourAlZaghloul@gmail.com> [aut, cre]
-Maintainer: Nour Al-Zaghloul <NourAlZaghloul@gmail.com>
-Description: Tools for streamlining lab workflow made for the. It's main purpose is to batch import, clean, and process raw data output from habit, datavyu, and director. It also provide a quick box/jitter plot setting and is able to sort through vital statistic & database information. Created for Nour & the Oakes Lab.
-License: GPL-3 | file LICENSE
+Title: Easily Install and Load Select Packages
+Version: 0.0.1
+Authors@R: c(
+    person("Michael Wayne", "Kearney", , email = "mike.wayne.kearney@gmail.com", role = c("aut", "cre"))
+  )
+Description: The 'pigeontoolsverse' is selection of packages designed to be loaded
+    in concert. The purpose of this package is to make it easy to install and 
+    subsequently load those packages.
+Depends: 
+    R (>= 3.1)
+Imports: 
+    cli (>= 1.0.0),
+    crayon (>= 1.3.4),
+    dplyr (>= 0.7.4),
+    purrr (>= 0.2.4),
+    rstudioapi (>= 0.7),
+    tibble (>= 1.4.2),
+    PigeonExploreR,
+    PigeonAnalyzeR,
+    PigeonTidyR,
+    PigeonExperimentR,
+    PigeonWeirdR
 Encoding: UTF-8
 LazyData: true
-Imports:
-    readr,
-    stringr,
-    dplyr,
-    tidyr
-RoxygenNote: 6.0.1.9000
-Suggests:
-    testthat,
-    ggplot2,
-    knitr,
-    rmarkdown
-VignetteBuilder: knitr
+RoxygenNote: 6.1.1
+Suggests: 
+    testthat
